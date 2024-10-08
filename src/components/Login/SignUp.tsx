@@ -1,4 +1,5 @@
 import React from "react";
+import {Link as ReactRDLink} from 'react-router-dom'
 import { Box, TextField, Alert, Typography, Link, FormControlLabel, FormControl, InputAdornment, InputLabel, Checkbox, Input, IconButton } from '@mui/material';
 import { Visibility, VisibilityOff, Login } from '@mui/icons-material';
 import LoadingButton from "@mui/lab/LoadingButton";
@@ -171,7 +172,7 @@ const SingUp = (userAuthorization: { (): Promise<void>; (): void; }) => {
             gutterBottom sx={{ display: 'block' }}
           >
             Don't have an account yet? Please 
-            <Link href="/Login"> SignUp</Link>
+            <ReactRDLink to="/Login"> SignUp</ReactRDLink>
           </Typography>
         </Box>
       </form> 

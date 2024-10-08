@@ -1,3 +1,29 @@
+// import React from 'react';
+// import { useAppDispatch, useAppSelector } from "../../Reduser/hooks";
+// import { increment, decrement } from '../../Reduser/reducer';
+
+// const DataTable = () => {
+//   const dispatch = useAppDispatch();
+//   const value = useAppSelector(state => state.value);
+
+// const dispatch = useDispatch();
+// const isFetching = useSelector(selectIsFetching);
+// const error = useSelector(selectError);
+// const items = useSelector(selectTableItems);
+
+//   return (
+//     <div>
+//       <h1>Value1: {value}</h1>
+//       <button type="button" onClick={() => dispatch(increment())}>Click</button>
+//       <h1>Value2: {value}</h1>
+//       <button type="button" onClick={() => dispatch(decrement())}>Click</button>
+
+//     </div>
+//   );
+// };
+
+// export default DataTable;
+
 import React, { useEffect, useState } from "react"
 import { getDataPage } from "./apiService";
 import DeleteIcon  from '@mui/icons-material/Delete';
@@ -8,6 +34,10 @@ import { Box, Button, CircularProgress, Container, Grid2, IconButton, Paper, Sta
 import { store } from './data'
 import AlertModal from './AlertModal'
 import FormModal from './FormModal'
+
+
+import { useAppDispatch, useAppSelector } from "../../ReduxStore/hooks";
+import { getAllItemsAsync } from '../../ReduxStore/tableSlice';
 
 
 interface Item {
@@ -57,6 +87,12 @@ const columns = [
 
 const DataTable = () => {
 
+  const dispatch = useAppDispatch();
+  const items = useAppSelector(state => state.table.items);
+  const isFetching = useAppSelector(state => state.table.isFetching);
+  const error = useAppSelector(state => state.table.error);
+
+
   const [data, setData] = useState<Array<Item>>([]);
   const [loading, setLoading] = useState(false);
   const [openAlertModal, setOpenAlertModal] = useState(false);
@@ -65,22 +101,25 @@ const DataTable = () => {
 
   useEffect(() => {
    
-    const fetchData = async () => {
-      setLoading(true);
+    // const fetchData = async () => {
+    //   setLoading(true);
 
-      try {
-        const responce = await getDataPage(); 
-        setData(responce.data)
-      }
-      catch (error) {
-        console.log("CATCH====> ",error);
-      }
-      finally {
-        setLoading(false);
-      }
-    }; 
+    //   try {
+    //     const responce = await getDataPage(); 
+    //     setData(responce.data)
+    //   }
+    //   catch (error) {
+    //     console.log("CATCH====> ",error);
+    //   }
+    //   finally {
+    //     setLoading(false);
+    //   }
+    // }; 
 
-    fetchData();
+    // fetchData();
+
+    dispatch(getAllItemsAsync());
+
   }, [])
   
   console.log("data: ",data);
@@ -117,7 +156,7 @@ const DataTable = () => {
 
   return (
     <>
-    {loading ? (
+    {isFetching ? (
       <Box
         sx={{
           display: 'flex',
@@ -150,7 +189,7 @@ const DataTable = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {data.map(item =>
+              {items.map(item =>
                 <TableRow key={item.id}>
                   <TableCell variant="body" align="left">{item.employeeNumber}</TableCell>
                   <TableCell variant="body" align="left">{item.employeeSignatureName}</TableCell>
@@ -181,6 +220,9 @@ const DataTable = () => {
       <AlertModal isOpen={openAlertModal} handleModal={handleAlertModal} />
       <FormModal isOpen={openFormModal} handleModal={handleFormModal}/>
 
+      <div>{items.map(item => <div>{item.documentName}</div>)}</div>
+      <div>{isFetching}</div>
+      <div>{error}</div>
     </div>
 
 

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+// import {  Switch as RouterSwitch } from "react-router-dom";
+import WelcomePage from './WelcomePage'
 import Login from './Login/Login'
 import DataTable from './DataTable/DataTable';
 
@@ -101,15 +103,14 @@ export default function App() {
   }
 
   return (
-    <Router>
+    <BrowserRouter>
         <Routes>
-          <Route path="/">
-            <Route index element={<Login />} /> 
-            <Route path="/login" element={<Login />} />
-            <Route path="/data-table" element={<DataTable />} />
-          </Route>  
+            {/* <Route index element={<WelcomePage />} />  */}
+            <Route path='/' element={<WelcomePage />} /> 
+            <Route path="login" element={<Login />} />
+            <Route path="data-table" element={<DataTable />} />
         </Routes>
-    </Router>
+    </BrowserRouter>
 );
 
   // return (
