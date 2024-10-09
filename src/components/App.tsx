@@ -103,7 +103,7 @@ export default function App() {
   }
 
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/Table-Pro">
         <Routes>
             {/* <Route index element={<WelcomePage />} />  */}
             <Route path='/' element={<WelcomePage />} /> 
