@@ -1,57 +1,22 @@
-// import React from 'react';
-// import { useAppDispatch, useAppSelector } from "../../Reduser/hooks";
-// import { increment, decrement } from '../../Reduser/reducer';
-
-// const DataTable = () => {
-//   const dispatch = useAppDispatch();
-//   const value = useAppSelector(state => state.value);
-
-// const dispatch = useDispatch();
-// const isFetching = useSelector(selectIsFetching);
-// const error = useSelector(selectError);
-// const items = useSelector(selectTableItems);
-
-//   return (
-//     <div>
-//       <h1>Value1: {value}</h1>
-//       <button type="button" onClick={() => dispatch(increment())}>Click</button>
-//       <h1>Value2: {value}</h1>
-//       <button type="button" onClick={() => dispatch(decrement())}>Click</button>
-
-//     </div>
-//   );
-// };
-
-// export default DataTable;
-
 import React, { useEffect, useState } from "react"
-import { getDataPage } from "./apiService";
 import DeleteIcon  from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/AddCircle';
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { Box, Button, CircularProgress, Container, Grid2, IconButton, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow  } from "@mui/material";
-import { store } from './data'
 import AlertModal from './AlertModal'
 import FormModal from './FormModal'
+import { format } from 'date-fns';
 
+import { Item, NewItem } from '../../Types/types';
 
 import { useAppDispatch, useAppSelector } from "../../ReduxStore/hooks";
-import { getAllItemsAsync } from '../../ReduxStore/tableSlice';
+import { getAllRecords, createTableRecord, deleteTableRecord } from './actionCreator';
+
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
-interface Item {
-  id: string;
-  employeeSignatureName: string;
-  employeeSigDate: string;
-  employeeNumber: string;
-  documentType: string;
-  documentStatus: string;
-  documentName: string;
-  companySignatureName: string;
-  companySigDate: string;
-
-}
 
 // const columns: GridColDef[] = [
 //   { field: 'id', headerName: 'ID'},
@@ -86,43 +51,44 @@ const columns = [
 
 
 const DataTable = () => {
+  
+
 
   const dispatch = useAppDispatch();
-  const items = useAppSelector(state => state.table.items);
+  const items = useAppSelector(state => state.table.records);
   const isFetching = useAppSelector(state => state.table.isFetching);
   const error = useAppSelector(state => state.table.error);
 
 
-  const [data, setData] = useState<Array<Item>>([]);
-  const [loading, setLoading] = useState(false);
+  // const [data, setData] = useState<Array<Item>>([]);
+  // const [loading, setLoading] = useState(false);
   const [openAlertModal, setOpenAlertModal] = useState(false);
   const [openFormModal, setOpenFormModal] = useState(false);
   const [selectedRecordId, setSelectedRecordId] = useState<string | null>(null);
+  const [editRecord, setEditRecord] = useState<Item | null>(null);
 
   useEffect(() => {
-   
-    // const fetchData = async () => {
-    //   setLoading(true);
 
-    //   try {
-    //     const responce = await getDataPage(); 
-    //     setData(responce.data)
-    //   }
-    //   catch (error) {
-    //     console.log("CATCH====> ",error);
-    //   }
-    //   finally {
-    //     setLoading(false);
-    //   }
-    // }; 
+    const item = {
+      
+      "documentStatus": "Подписан",
+      "employeeNumber": "1234",
+      "documentType": "Трудовой договор",
+      "documentName": "Договор.pdf",
+      "companySignatureName": "Договор.sig",
+      "employeeSignatureName": "Договор.sig",
+      "employeeSigDate": "2022-12-23T11:19:27.017Z",
+      "companySigDate": "2022-12-23T11:19:27.017Z"
+  };
+    dispatch(getAllRecords());
+    // dispatch(createTableRecord(item));
+    setTimeout(() => {
+      // dispatch(deleteTableRecord("54737a31-955d-4792-a7cb-fc630f8f8c6b"));
+      // dispatch(createTableRecord(item));
+    }, 3000);
 
-    // fetchData();
+  }, [dispatch])
 
-    dispatch(getAllItemsAsync());
-
-  }, [])
-  
-  console.log("data: ",data);
 
   // Handle Alert Modal for deleting record
   const handleDelete = (id: string) => {
@@ -134,25 +100,46 @@ const DataTable = () => {
     setOpenAlertModal(false);
 
     if (shouldDelete){
-
-      console.log("selectedRecordId: ", selectedRecordId);
+      dispatch(deleteTableRecord(selectedRecordId));
+      setSelectedRecordId(null);
+      // console.log("selectedRecordId: ", selectedRecordId);
     } 
   } 
 
   // Handle Form Modal for editing record
-  const handleEdit = (id: string) => {
-    setSelectedRecordId(id);
+  const handleEdit = (item: Item) => {
+    setEditRecord(item); 
     setOpenFormModal(true);
   }
 
-  const handleFormModal = (shouldDelete: boolean) => {
+  const setEdit = (item: Item | null) => {
     setOpenFormModal(false);
 
-    if (shouldDelete){
-      console.log("shouldDelete: ", shouldDelete);
+    // dispatch() //edit item  
+  }
+
+  // Handle Form Modal for creating record
+  const handleCreate = () => {
+    setOpenFormModal(true);
+  }
+
+  const handleFormModal = (item: Item | NewItem | null) => {
+    setOpenFormModal(false);
+    setEditRecord(null);
+
+    if (item){
+      console.log("HANDLE FROM MODAL IIIFFF: ", item);
+
+      dispatch(createTableRecord(item));
+
+      // if (typeof item === "NewItem") {
+      //   // dispatch(createTableRecord(item));
+      //   // return;
+      // }
       
     }   
   }
+
 
   return (
     <>
@@ -170,41 +157,43 @@ const DataTable = () => {
     ):(
 
     <div>
-      <Paper sx={{margin: '1%'}}>
-        <div style={{margin: '1%', textAlign: 'right', paddingTop : 10}}>
-          <Button variant="contained" color='success' startIcon={<AddIcon />}>
-            NEW
-          </Button>
-        </div>
+      <div style={{marginTop: '1%', textAlign: 'right', paddingTop : 10, paddingRight: 30}}>
+        <Button variant="contained" color='success' startIcon={<AddIcon />} onClick={handleCreate}>
+          NEW
+        </Button>
+      </div>
+      <Paper elevation={6} sx={{marginLeft: 3, marginRight: 3, marginTop: 1}}>
+        
         <div>
         {/* <TableContainer sx={{overflow: 'initial'}}>
           <Table stickyHeader> */}
         <TableContainer>
-          <Table>
+          <Table >
             <TableHead >
-              <TableRow style={{backgroundColor: 'midnightblue'}}>
+              <TableRow key="head-row">
                 {columns.map(column=>
-                  <TableCell variant="head" align="left" key={column.id}>{column.name}</TableCell> 
+                  <TableCell variant='head' align="center" key={column.id}>{column.name}</TableCell> 
                 )}
               </TableRow>
             </TableHead>
             <TableBody>
-              {items.map(item =>
+              {items.map((item: any) =>
                 <TableRow key={item.id}>
-                  <TableCell variant="body" align="left">{item.employeeNumber}</TableCell>
-                  <TableCell variant="body" align="left">{item.employeeSignatureName}</TableCell>
-                  <TableCell variant="body" align="left">{item.employeeSigDate}</TableCell>
-                  <TableCell variant="body" align="left">{item.documentType}</TableCell>
-                  <TableCell variant="body" align="left">{item.documentStatus}</TableCell>
-                  <TableCell variant="body" align="left">{item.documentName}</TableCell>
-                  <TableCell variant="body" align="left">{item.companySignatureName}</TableCell>
-                  <TableCell variant="body" align="left">{item.companySigDate}</TableCell>
-                  <TableCell >
+                  {/* <TableCell variant="body" align="left">{item.id}</TableCell> */}
+                  <TableCell variant="body" align="center">{item.employeeNumber}</TableCell>
+                  <TableCell variant="body" align="center">{item.employeeSignatureName}</TableCell>
+                  <TableCell variant="body" align="center">{format(new Date(item.employeeSigDate), 'MMMM dd, yyyy')}</TableCell>
+                  <TableCell variant="body" align="center">{item.documentType}</TableCell>
+                  <TableCell variant="body" align="center">{item.documentStatus}</TableCell>
+                  <TableCell variant="body" align="center">{item.documentName}</TableCell>
+                  <TableCell variant="body" align="center">{item.companySignatureName}</TableCell>
+                  <TableCell variant="body" align="center">{format(new Date(item.companySigDate), 'MMMM dd, yyyy')}</TableCell>
+                  <TableCell variant="body" align="center">
                     <Stack direction={{ xs: 'column', sm: 'row' }} >
-                      <IconButton aria-label="edit" color="primary" onClick={e => {handleEdit(item.id)}} >
+                      <IconButton aria-label="edit" color="primary" onClick={() => {handleEdit(item)}} >
                         <EditIcon  fontSize="medium"/>
                       </IconButton>
-                      <IconButton aria-label="delete" color="error" onClick={e => {handleDelete(item.id)}} >
+                      <IconButton aria-label="delete" color="error" onClick={() => {handleDelete(item.id)}} >
                         <DeleteIcon  fontSize="medium" />
                       </IconButton>
                     </Stack>
@@ -218,10 +207,10 @@ const DataTable = () => {
       </Paper>
 
       <AlertModal isOpen={openAlertModal} handleModal={handleAlertModal} />
-      <FormModal isOpen={openFormModal} handleModal={handleFormModal}/>
+      <FormModal isOpen={openFormModal} handleModal={handleFormModal} isEdit={editRecord}/>
 
-      <div>{items.map(item => <div>{item.documentName}</div>)}</div>
-      <div>{isFetching}</div>
+      <ToastContainer />
+      
       <div>{error}</div>
     </div>
 

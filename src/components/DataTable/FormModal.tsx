@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, FormControlLabel, FormLabel, InputLabel, MenuItem, OutlinedInput, Radio, Checkbox, RadioGroup, Select, Stack, TextField, Box, Grid } from "@mui/material";
 import { LocalizationProvider, DateTimePicker, PickerChangeHandlerContext, DateTimeValidationError} from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -6,22 +6,12 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import dayjs, { Dayjs } from 'dayjs';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { styled } from '@mui/material/styles';
-
+import { Item, NewItem } from '../../Types/types';
 
 interface ModalProps {
-    isOpen: boolean;
-    handleModal: (shouldDelete: boolean) => void;
-}
-
-interface FormProps {
-    companySigDate: string;
-    companySignatureName: string;
-    documentName: string;
-    documentStatus: string;
-    documentType: string;
-    employeeNumber: string;
-    employeeSigDate: string;
-    employeeSignatureName : string;
+  isOpen: boolean;
+  handleModal: (createOrEdit: Item | NewItem | null) => void;
+  isEdit: Item | null;
 }
 
 const VisuallyHiddenInput = styled('input')({
@@ -36,12 +26,12 @@ const VisuallyHiddenInput = styled('input')({
   width: 1,
 });
 
-const FormModal: React.FC<ModalProps> = ({ isOpen, handleModal }) => {
+const FormModal: React.FC<ModalProps> = ({ isOpen, handleModal, isEdit }) => {
 
   const [employeeDate, setEmployeeDate] = useState<Dayjs | null>(dayjs(Date()));
   const [companyDate, setCompanyDate] = useState<Dayjs | null>(dayjs(Date()));
     const [open, setOpen] = useState(false);
-    const [form, setForm] = useState({
+    const [form, setForm] = useState<Item | NewItem>({
       companySigDate: '',
       companySignatureName: '',
       documentName: '',
@@ -66,23 +56,22 @@ const FormModal: React.FC<ModalProps> = ({ isOpen, handleModal }) => {
         setOpen(true);
     };
 
-    const handleClose = (data: object) => {
-        handleModal(false)
-        setOpen(false);
+    const handleClose = () => {
+        handleModal(null)
     };
 
     const handleChange = (event: { target: any; preventDefault: () => void; }) => {
       event.preventDefault();
       console.log('=================> ', event.target.value);
       // const value = event.target.value.toString(); // Check if http request successful with this
-      let value: string;
+      let value = "";
       if (event.target.name == 'employeeSigDate' || event.target.name == 'companySigDate') {
         value = new Date(event.target.value.toString()).toISOString();
         console.log("hlooooooooooooooooooooooo");
         
       } else {
         value = event.target.value.toString();
-        console.log("gggggggggggggggggggggggg");
+        console.log("gggggggggggggggggggggggg: ", typeof value);
         
       }
 
@@ -109,24 +98,54 @@ const FormModal: React.FC<ModalProps> = ({ isOpen, handleModal }) => {
         // console.log("formJson: ", data.documentStatus);/
         // console.log("formJson: ", data);
 
-        console.log("companyDate: ", companyDate?.toISOString());
-        const temp = companyDate?.toISOString();
-        temp?.toString()
-        console.log("companyDate: ", typeof temp);
-        console.log("companyDate2: ", temp);
-        
-        console.log("formJson: ", form);
+        handleModal({
+          ...form,
+          employeeSigDate: employeeDate?.toISOString() || '',
+          companySigDate: companyDate?.toISOString() || '',
+        });
+
+        setForm({
+          companySigDate: '',
+          companySignatureName: '',
+          documentName: '',
+          documentStatus: '',
+          documentType: '',
+          employeeNumber: '',
+          employeeSigDate: '',
+          employeeSignatureName: '',
+        });
     };
 
 
 
+    useEffect(()=>{
+
+      if (isEdit) {
+        setForm({ ...isEdit });
+        // setForm({ ...isEdit, isEdit.id });
+        setEmployeeDate(dayjs(isEdit.employeeSigDate));
+        setCompanyDate(dayjs(isEdit.companySigDate));
+        
+      } else {
+        setForm({
+          companySigDate: '',
+          companySignatureName: '',
+          documentName: '',
+          documentStatus: '',
+          documentType: '',
+          employeeNumber: '',
+          employeeSigDate: '',
+          employeeSignatureName: '',
+        });
+      }
+    }, [isEdit]);
 
   return (
     <Dialog
-        open={isOpen}
-        onClose={handleClose}
-       fullWidth
-      >
+      open={isOpen}
+      onClose={handleClose}
+      fullWidth
+    >
       <form onSubmit={handleSubmit}>
         <DialogTitle>Labor Contract</DialogTitle>
         <DialogContent>

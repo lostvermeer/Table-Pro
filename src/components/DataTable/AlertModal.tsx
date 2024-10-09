@@ -7,7 +7,6 @@ interface ModalProps {
   handleModal: (shouldDelete: boolean) => void;
 }
 
-
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & {
       children: React.ReactElement<any, any>;
@@ -20,16 +19,20 @@ const Transition = React.forwardRef(function Transition(
 
 const AlertModal: React.FC<ModalProps>  = ({isOpen, handleModal}) => {
 
-  const handleClose = (isRemoved: boolean) => {
-      handleModal(isRemoved);
+  const handleClose = () => {
+      handleModal(false);
   }
+
+  const handleDelete = () => {
+    handleModal(true);
+}
 
   return (
     <>
     <Dialog
         open={isOpen}
         TransitionComponent={Transition}
-        keepMounted
+        // keepMounted
         onClose={handleClose}
         aria-describedby="alert-dialog-slide-description"
       >
@@ -41,8 +44,8 @@ const AlertModal: React.FC<ModalProps>  = ({isOpen, handleModal}) => {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => handleClose(true)}>Delete</Button>
-          <Button onClick={() => handleClose(false)}>Cancel</Button>
+          <Button onClick={handleDelete}>Delete</Button>
+          <Button onClick={handleClose}>Cancel</Button>
         </DialogActions>
       </Dialog>
     </>
