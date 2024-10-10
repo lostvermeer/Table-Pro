@@ -24,6 +24,7 @@ so that gh-pages could run repo properly
 
 ### Further work
 
-*Set the proper typing 
-*Refactor Login page
-*Optimze webpack 
+- Set the proper typing 
+- Refactor Login page
+- Optimze webpack 
+- Error handling in FormModal
