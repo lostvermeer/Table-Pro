@@ -1,10 +1,23 @@
 # 🚀SPA-application realization with React/Rudux/Typescript + Webpack and Material UI on for Pryaniky.com🍪
 
-This project has been created using **webpack-cli**, you can now run in npm scripts
-
+To run application plaese use GitHub Pages
+or
+clone repository: 
 ```
-npm run build:dev
+https://github.com/lostvermeer/Table-Pro.git
+```
+and run in terminal
+```
+npm run build
 npm run start
 ```
 
-to bundle your application
+I have changed values of build script:
+```
+"build": "webpack --mode=development" 
+```
+and build:dev script
+```
+"build:dev": "webpack --mode=production --node-env=production" 
+```
+so thar gh-pages could run repo properly

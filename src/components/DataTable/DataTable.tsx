@@ -1,49 +1,18 @@
 import React, { useEffect, useState } from "react"
+import { useNavigate } from "react-router";
 import DeleteIcon  from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/AddCircle';
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { Box, Button, CircularProgress, Container, Grid2, IconButton, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow  } from "@mui/material";
+import { Box, Button, CircularProgress, IconButton, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow  } from "@mui/material";
 import AlertModal from './AlertModal'
 import FormModal from './FormModal'
 import { format } from 'date-fns';
-
-import { Item, NewItem } from '../../Types/types';
-
 import { useAppDispatch, useAppSelector } from "../../ReduxStore/hooks";
-import { getAllRecords, createTableRecord, deleteTableRecord, selectRecordId, setNewRecord } from './actionCreator';
-
-import { ToastContainer, toast } from 'react-toastify';
+import { getAllRecords, deleteTableRecord, selectRecordId } from './actionCreator';
+import { ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
-import Typography from '@mui/material/Typography';
-import CardActionArea from '@mui/material/CardActionArea';
-
-
-
-// const columns: GridColDef[] = [
-//   { field: 'id', headerName: 'ID'},
-//   { field: 'employeeNumber', headerName: 'Employee Number', width: 135},
-//   { field: 'employeeSignatureName', headerName: 'Employee Signature Name', width: 186},
-//   { field: 'employeeSigDate', headerName: 'Employee Signing Date', width: 186},
-//   { field: 'documentType', headerName: 'Document Type', width: 120},
-//   { field: 'documentStatus', headerName: 'Document Satatus', width: 137},
-//   { field: 'documentName', headerName: 'Document Name', width: 125},
-//   { field: 'companySignatureName', headerName: 'Company Signature Name', width: 185},
-//   { field: 'companySigDate', headerName: 'Company Signing Date', width: 170},
-// ];
-
-// interface Column {
-//   id: 'employeeNumber' | 'employeeSignatureName' | 'employeeSigDate' | 'documentType' | 'documentStatus' | 'documentName' | 'companySignatureName' | 'companySigDate';
-//   name: string;
-// }
-
 const columns = [
-  // { id: 'id', name: 'ID'},
   { id: 'employeeNumber', name: 'Employee Number'},
   { id: 'employeeSignatureName', name: 'Employee Signature Name'},
   { id: 'employeeSigDate', name: 'Employee Signing Date'},
@@ -56,38 +25,34 @@ const columns = [
 ];
 
 
-
 const DataTable = () => {
+
   
-
-
+  const navigate = useNavigate();
+  
   const dispatch = useAppDispatch();
   const items = useAppSelector(state => state.table.records);
   const isFetching = useAppSelector(state => state.table.isFetching);
   const selectedRecord = useAppSelector(state => state.table.selectedRecord);
-  const newRecord = useAppSelector(state => state.table.newRecord);
   const error = useAppSelector(state => state.table.error);
 
-
-  // const [data, setData] = useState<Array<Item>>([]);
-  // const [loading, setLoading] = useState(false);
   const [openAlertModal, setOpenAlertModal] = useState(false);
   const [openFormModal, setOpenFormModal] = useState(false);
   const [createOrEdit, setCreateOrEdit] = useState<"create" | "edit" | null>(null);
 
-  // const [selectedRecordId, setSelectedRecordId] = useState<string | null>(null);
-  const [editRecord, setEditRecord] = useState<Item | null>(null);
-
   useEffect(() => {
-
-    dispatch(getAllRecords());
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      navigate('/login');
+    } else {
+      dispatch(getAllRecords()); 
+    }
 
   }, [dispatch])
 
 
   // Handle Alert Modal for deleting record
   const handleDelete = (id: string) => {
-    // setSelectedRecordId(id); 
     dispatch(selectRecordId(id));
     setOpenAlertModal(true);
   }
@@ -97,15 +62,12 @@ const DataTable = () => {
 
     if (shouldDelete && selectedRecord.id){
       dispatch(deleteTableRecord(selectedRecord.id));
-      // setSelectedRecordId(null); 
       dispatch(selectRecordId(null));
-      // console.log("selectedRecordId: ", selectedRecordId);
     } 
   } 
 
-  // Handle Form Modal for edit and create record
+  // Handle edit and create record for Form Modal
   const handleEdit = (id: string) => {
-    // setEditRecord(item); 
     dispatch(selectRecordId(id));
     setCreateOrEdit('edit');
     setOpenFormModal(true);
@@ -116,39 +78,11 @@ const DataTable = () => {
     setOpenFormModal(true);
   }
 
-  const handleFormModal = (submit: boolean) => {
+  const handleFormModal = () => {
     setOpenFormModal(false);
     setCreateOrEdit(null);
     dispatch(selectRecordId(null));
-
-    if (submit) {
-      // if (createOrEdit === "edit") {
-      //   // dispatch(editRequest());
-      //   // dispatch(selectRecordId(null));
-      //   console.log("selectRecordId: ", selectedRecord.id);
-      // }
-      // else if (createOrEdit === "create") {
-      //   // dispatch(createTableRecord(newRecord));
-      //   // dispatch(setNewRecord(null));
-      //   console.log("selectRecordId: ", selectedRecord.id);
-      // }
-
-    }
-  
   }
-
-
-
-
-  // const setEdit = (item: Item | null) => {
-  //   setOpenFormModal(false);
-
-  //   // dispatch() //edit item  
-  // }
-
-  // Handle Form Modal for creating record
-  
-
 
   return (
     <>
@@ -164,33 +98,6 @@ const DataTable = () => {
         <CircularProgress size={100} />
       </Box>
     ):( 
-
-    // error ? (
-
-    //   <Box
-    //     sx={{
-    //       display: 'flex',
-    //       justifyContent: 'center',
-    //       alignItems: 'center',
-    //       width: '100vw', 
-    //       height: '90vh'
-    //     }}
-    //   >
-    //     <Card sx={{ maxWidth: 345, transform: 'scale(3)', transformOrigin: 'center' }}>
-    //       <CardActionArea>
-    //         <CardContent>
-    //           <Typography gutterBottom variant="h5" component="div">
-    //             {error}
-    //           </Typography>
-    //           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-    //             Please refresh the page
-    //           </Typography>
-    //         </CardContent>
-    //       </CardActionArea>
-    //     </Card>
-    //   </Box>
-
-    // ) : (
 
       <div>
         <Paper elevation={6} 
@@ -218,29 +125,37 @@ const DataTable = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {items.map((item: any) =>
-                  <TableRow key={item.id}>
-                    {/* <TableCell variant="body" align="left">{item.id}</TableCell> */}
-                    <TableCell variant="body" align="center">{item.employeeNumber}</TableCell>
-                    <TableCell variant="body" align="center">{item.employeeSignatureName}</TableCell>
-                    <TableCell variant="body" align="center">{format(new Date(item.employeeSigDate), 'MMMM dd, yyyy')}</TableCell>
-                    <TableCell variant="body" align="center">{item.documentType}</TableCell>
-                    <TableCell variant="body" align="center">{item.documentStatus}</TableCell>
-                    <TableCell variant="body" align="center">{item.documentName}</TableCell>
-                    <TableCell variant="body" align="center">{item.companySignatureName}</TableCell>
-                    <TableCell variant="body" align="center">{format(new Date(item.companySigDate), 'MMMM dd, yyyy')}</TableCell>
-                    <TableCell variant="body" align="left">
-                      <Stack direction={{ xs: 'column', sm: 'row' }} >
-                        <IconButton aria-label="edit" color="primary" onClick={() => {handleEdit(item.id)}} >
-                          <EditIcon  fontSize="medium"/>
-                        </IconButton>
-                        <IconButton aria-label="delete" color="error" onClick={() => {handleDelete(item.id)}} >
-                          <DeleteIcon  fontSize="medium" />
-                        </IconButton>
-                      </Stack>
+                {(items || []).length > 0 ? (
+                  items.map((item: any) =>
+                    <TableRow key={item.id}>
+                      <TableCell variant="body" align="center">{item.employeeNumber}</TableCell>
+                      <TableCell variant="body" align="center">{item.employeeSignatureName}</TableCell>
+                      <TableCell variant="body" align="center">{format(new Date(item.employeeSigDate), 'MMMM dd, yyyy')}</TableCell>
+                      <TableCell variant="body" align="center">{item.documentType}</TableCell>
+                      <TableCell variant="body" align="center">{item.documentStatus}</TableCell>
+                      <TableCell variant="body" align="center">{item.documentName}</TableCell>
+                      <TableCell variant="body" align="center">{item.companySignatureName}</TableCell>
+                      <TableCell variant="body" align="center">{format(new Date(item.companySigDate), 'MMMM dd, yyyy')}</TableCell>
+                      <TableCell variant="body" align="left">
+                        <Stack direction={{ xs: 'column', sm: 'row' }} >
+                          <IconButton aria-label="edit" color="primary" onClick={() => {handleEdit(item.id)}} >
+                            <EditIcon  fontSize="medium"/>
+                          </IconButton>
+                          <IconButton aria-label="delete" color="error" onClick={() => {handleDelete(item.id)}} >
+                            <DeleteIcon  fontSize="medium" />
+                          </IconButton>
+                        </Stack>
+                      </TableCell>
+                    </TableRow>
+                  )
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={columns.length} align="center">
+                      No records found.
                     </TableCell>
                   </TableRow>
-                )}             
+                )}        
+
               </TableBody>
             </Table>
           </TableContainer>
@@ -253,30 +168,12 @@ const DataTable = () => {
 
       </div>
 
-
-    // )
-
-    
-
-
-
-
-
-
-
-
-
-
-
     //   <Container 
     //   maxWidth= "xl"
     //   sx={{
     //         m: '0 auto',
     //         mt: 3,
-    //         textAlign: 'center',
-            
-            
-            
+    //         textAlign: 'center',       
     //       }}
     // >
     //   <Paper elevation={5} sx={{ height: 400, width: '100%', p: 1 }} >
@@ -297,3 +194,38 @@ const DataTable = () => {
 };
 
 export default DataTable;
+
+
+
+
+// import Card from '@mui/material/Card';
+// import CardContent from '@mui/material/CardContent';
+// import CardMedia from '@mui/material/CardMedia';
+// import Typography from '@mui/material/Typography';
+// import CardActionArea from '@mui/material/CardActionArea';
+// error ? (
+//
+//   <Box
+//     sx={{
+//       display: 'flex',
+//       justifyContent: 'center',
+//       alignItems: 'center',
+//       width: '100vw', 
+//       height: '90vh'
+//     }}
+//   >
+//     <Card sx={{ maxWidth: 345, transform: 'scale(3)', transformOrigin: 'center' }}>
+//       <CardActionArea>
+//         <CardContent>
+//           <Typography gutterBottom variant="h5" component="div">
+//             {error}
+//           </Typography>
+//           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+//             Please refresh the page
+//           </Typography>
+//         </CardContent>
+//       </CardActionArea>
+//     </Card>
+//   </Box>
+
+// ) : (

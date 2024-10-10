@@ -1,16 +1,5 @@
 import axious from 'axios';
-
-interface TableRecord {
-    id: string;
-    employeeSignatureName: string;
-    employeeSigDate: string;
-    employeeNumber: string;
-    documentType: string;
-    documentStatus: string;
-    documentName: string;
-    companySignatureName: string;
-    companySigDate: string;
-  }
+import { TableRecord } from '../Types/types';
 
 const apiClient = axious.create({
     baseURL: 'https://test.v5.pryaniky.com/ru/data/v3/testmethods/docs',

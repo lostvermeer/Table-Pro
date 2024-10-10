@@ -1,30 +1,28 @@
-import { getAllTableRecords, createNewRecord, deleteRecordById, updateRecordById } from "../apiService";
-import { makeRequest, getAllRecSuccess, requestFailed, createRecord, deleteRecord, selectRecord, newRecord, updateRecord } from '../../ReduxStore/action'
+import { 
+    getAllTableRecords, 
+    createNewRecord, 
+    deleteRecordById, 
+    updateRecordById 
+} from "../../ApiService/apiService";
+import { 
+    makeRequest, 
+    getAllRecSuccess, 
+    requestFailed, 
+    createRecord, 
+    deleteRecord, 
+    selectRecord, 
+    updateRecord 
+} from '../../ReduxStore/action'
+import { ToastParams } from "../../Types/types";
 import { toast } from "react-toastify";
-import { ReactNode } from "react";
 
-interface ToastParams {
-    render: string;
-    type: 'success' | 'error' | 'default';
-    isLoading: boolean;
-    closeButton: boolean;
-    autoClose: number;
-    draggable: boolean;
-}
-
-const toastParams: ToastParams = {
+export const toastParams: ToastParams = {
     render: "",
     type: "default",
     isLoading: false,
     closeButton: true,
     autoClose: 1500,
     draggable: true,
-}
-
-export const setNewRecord = (item: any) => {
-    return (dispatch: (arg0: { type: string; payload?: any; }) => void) => {
-        dispatch(newRecord(item))
-    }
 }
 
 export const selectRecordId = (id: any) => {

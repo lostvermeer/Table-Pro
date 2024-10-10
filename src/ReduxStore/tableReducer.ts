@@ -1,45 +1,18 @@
-// import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
-import type { RootState } from './store'
-import { MAKE_REQ, GETALLRECORDS_SUCCESS, REQ_FAILED, CREATE_RECORD_SUCCESS, DELETE_RECORD_SUCCESS, SELECT_RECORD, NEW_RECORD, UPDATE_RECORD } from './actionTypes'
-// import { getDataPage } from "../Components/DataTable/apiService";
-
-
-interface TableRecord {
-  id: string;
-  employeeSignatureName: string;
-  employeeSigDate: string;
-  employeeNumber: string;
-  documentType: string;
-  documentStatus: string;
-  documentName: string;
-  companySignatureName: string;
-  companySigDate: string;
-}
-
-interface NewRecord {
-  employeeSignatureName: string;
-  employeeSigDate: string;
-  employeeNumber: string;
-  documentType: string;
-  documentStatus: string;
-  documentName: string;
-  companySignatureName: string;
-  companySigDate: string;
-}
-
-export interface TableState {
-  records: Array<TableRecord>;
-  isFetching: boolean;
-  selectedRecord: TableRecord | null;
-  newRecord: NewRecord | null;
-  error: string | null;
-}
+import { 
+  MAKE_REQ, 
+  GETALLRECORDS_SUCCESS, 
+  REQ_FAILED, 
+  CREATE_RECORD_SUCCESS, 
+  DELETE_RECORD_SUCCESS, 
+  SELECT_RECORD, 
+  UPDATE_RECORD 
+} from '../Types/actionTypes'
+import { TableState } from '../Types/types';
 
 const initialState: TableState = {
   records: [],
   isFetching: true,
   selectedRecord: null,
-  newRecord: null,
   error: null,
 }
 
@@ -81,11 +54,6 @@ const tableReducer = (state = initialState, action: any) => {
         ...state,
         selectedRecord: findRecord
       };
-    case NEW_RECORD:
-      return{
-        ...state,
-        newRecord: action.payload
-      };
     case UPDATE_RECORD:
       const newItem = action.payload
       const updatedRecords = state.records.map(record => record.id === newItem.id ? newItem : record)
@@ -101,8 +69,3 @@ const tableReducer = (state = initialState, action: any) => {
  
 
 export default tableReducer;
-export const selectTableRecords = (state: RootState) => state.table.records;
-export const selectIsFetching = (state: RootState) => state.table.isFetching;
-export const selectSelectedRecord = (state: RootState) => state.table.selectedRecord;
-export const selectNewRecord = (state: RootState) => state.table.newRecord;
-export const selectError = (state: RootState) => state.table.error;
