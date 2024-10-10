@@ -84,8 +84,8 @@ export default function App() {
         />
       </Box>
 
-      {/* <BrowserRouter basename="/Table-Pro"> */}
-      <BrowserRouter >
+      <BrowserRouter basename="/Table-Pro">
+      {/* <BrowserRouter > */}
         <Routes>
           <Route index element={<WelcomePage />} />
           <Route path="login" element={<Login />} />
