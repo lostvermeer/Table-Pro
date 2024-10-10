@@ -1,4 +1,4 @@
-import { MAKE_REQ, GETALLRECORDS_SUCCESS, REQ_FAILED, CREATE_RECORD_SUCCESS, DELETE_RECORD_SUCCESS, SELECT_RECORD, NEW_RECORD } from "./actionTypes";
+import { MAKE_REQ, GETALLRECORDS_SUCCESS, REQ_FAILED, CREATE_RECORD_SUCCESS, DELETE_RECORD_SUCCESS, SELECT_RECORD, NEW_RECORD, UPDATE_RECORD } from "./actionTypes";
 
 export const makeRequest = () => {
     return {
@@ -44,6 +44,13 @@ export const selectRecord = (data: any) => {
 export const newRecord = (data: any) => {
   return {
       type: NEW_RECORD,
+      payload: data
+  }
+}
+
+export const updateRecord = (data: any) => {
+  return {
+      type: UPDATE_RECORD,
       payload: data
   }
 }

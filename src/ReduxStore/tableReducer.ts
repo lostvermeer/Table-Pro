@@ -1,6 +1,6 @@
 // import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
 import type { RootState } from './store'
-import { MAKE_REQ, GETALLRECORDS_SUCCESS, REQ_FAILED, CREATE_RECORD_SUCCESS, DELETE_RECORD_SUCCESS, SELECT_RECORD, NEW_RECORD } from './actionTypes'
+import { MAKE_REQ, GETALLRECORDS_SUCCESS, REQ_FAILED, CREATE_RECORD_SUCCESS, DELETE_RECORD_SUCCESS, SELECT_RECORD, NEW_RECORD, UPDATE_RECORD } from './actionTypes'
 // import { getDataPage } from "../Components/DataTable/apiService";
 
 
@@ -30,7 +30,7 @@ interface NewRecord {
 export interface TableState {
   records: Array<TableRecord>;
   isFetching: boolean;
-  selectedRecord: string | null;
+  selectedRecord: TableRecord | null;
   newRecord: NewRecord | null;
   error: string | null;
 }
@@ -76,14 +76,22 @@ const tableReducer = (state = initialState, action: any) => {
         records: filterRecord
       };
     case SELECT_RECORD:
+      const findRecord = state.records.find(record => record.id == action.payload)
       return{
         ...state,
-        selectedRecord: action.payload
+        selectedRecord: findRecord
       };
     case NEW_RECORD:
       return{
         ...state,
         newRecord: action.payload
+      };
+    case UPDATE_RECORD:
+      const newItem = action.payload
+      const updatedRecords = state.records.map(record => record.id === newItem.id ? newItem : record)
+      return{
+        ...state,
+        records: updatedRecords
       };
 
     default:

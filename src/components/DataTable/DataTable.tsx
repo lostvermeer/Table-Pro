@@ -73,28 +73,14 @@ const DataTable = () => {
   // const [loading, setLoading] = useState(false);
   const [openAlertModal, setOpenAlertModal] = useState(false);
   const [openFormModal, setOpenFormModal] = useState(false);
+  const [createOrEdit, setCreateOrEdit] = useState<"create" | "edit" | null>(null);
+
   // const [selectedRecordId, setSelectedRecordId] = useState<string | null>(null);
   const [editRecord, setEditRecord] = useState<Item | null>(null);
 
   useEffect(() => {
 
-    const item = {
-      
-      "documentStatus": "Подписан",
-      "employeeNumber": "1234",
-      "documentType": "Трудовой договор",
-      "documentName": "Договор.pdf",
-      "companySignatureName": "Договор.sig",
-      "employeeSignatureName": "Договор.sig",
-      "employeeSigDate": "2022-12-23T11:19:27.017Z",
-      "companySigDate": "2022-12-23T11:19:27.017Z"
-  };
     dispatch(getAllRecords());
-    // dispatch(createTableRecord(item));
-    setTimeout(() => {
-      // dispatch(deleteTableRecord("54737a31-955d-4792-a7cb-fc630f8f8c6b"));
-      // dispatch(createTableRecord(item));
-    }, 3000);
 
   }, [dispatch])
 
@@ -109,20 +95,50 @@ const DataTable = () => {
   const handleAlertModal = (shouldDelete: boolean) => {
     setOpenAlertModal(false);
 
-    if (shouldDelete && selectedRecord){
-      dispatch(deleteTableRecord(selectedRecord));
+    if (shouldDelete && selectedRecord.id){
+      dispatch(deleteTableRecord(selectedRecord.id));
       // setSelectedRecordId(null); 
       dispatch(selectRecordId(null));
       // console.log("selectedRecordId: ", selectedRecordId);
     } 
   } 
 
-  // Handle Form Modal for editing record
+  // Handle Form Modal for edit and create record
   const handleEdit = (id: string) => {
     // setEditRecord(item); 
     dispatch(selectRecordId(id));
+    setCreateOrEdit('edit');
     setOpenFormModal(true);
   }
+
+  const handleCreate = () => {
+    setCreateOrEdit('create');
+    setOpenFormModal(true);
+  }
+
+  const handleFormModal = (submit: boolean) => {
+    setOpenFormModal(false);
+    setCreateOrEdit(null);
+    dispatch(selectRecordId(null));
+
+    if (submit) {
+      // if (createOrEdit === "edit") {
+      //   // dispatch(editRequest());
+      //   // dispatch(selectRecordId(null));
+      //   console.log("selectRecordId: ", selectedRecord.id);
+      // }
+      // else if (createOrEdit === "create") {
+      //   // dispatch(createTableRecord(newRecord));
+      //   // dispatch(setNewRecord(null));
+      //   console.log("selectRecordId: ", selectedRecord.id);
+      // }
+
+    }
+  
+  }
+
+
+
 
   // const setEdit = (item: Item | null) => {
   //   setOpenFormModal(false);
@@ -131,28 +147,7 @@ const DataTable = () => {
   // }
 
   // Handle Form Modal for creating record
-  const handleCreate = () => {
-    setOpenFormModal(true);
-  }
-
-  const handleFormModal = (submit: boolean) => {
-    setOpenFormModal(false);
-
-    if (submit) {
-      if (selectedRecord) {
-        // dispatch(editRequest());
-        // dispatch(selectRecordId(null));
-        console.log("selectRecordId: ", selectedRecord);
-        
-      }
-      else if (newRecord) {
-        dispatch(createTableRecord(newRecord));
-        dispatch(setNewRecord(null));
-      }
-
-    }
   
-  }
 
 
   return (
@@ -253,7 +248,7 @@ const DataTable = () => {
         </Paper>
 
         <AlertModal isOpen={openAlertModal} handleModal={handleAlertModal} />
-        <FormModal isOpen={openFormModal} handleModal={handleFormModal} isEdit={editRecord}/>
+        <FormModal isOpen={openFormModal} handleModal={handleFormModal} createOrEdit={createOrEdit}/>
         <ToastContainer />
 
       </div>

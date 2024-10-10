@@ -51,3 +51,8 @@ export const deleteRecordById = async (id: string) => {
     const response = await apiClient.post(`/userdocs/delete/${id}`);    
     return response;
 }
+
+export const updateRecordById = async (item: TableRecord) => {
+    const response = await apiClient.post(`userdocs/set/${item.id}`, item);    
+    return response;
+}

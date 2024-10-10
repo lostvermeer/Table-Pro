@@ -1,5 +1,5 @@
-import { getAllTableRecords, createNewRecord, deleteRecordById } from "../apiService";
-import { makeRequest, getAllRecSuccess, requestFailed, createRecord, deleteRecord, selectRecord, newRecord } from '../../ReduxStore/action'
+import { getAllTableRecords, createNewRecord, deleteRecordById, updateRecordById } from "../apiService";
+import { makeRequest, getAllRecSuccess, requestFailed, createRecord, deleteRecord, selectRecord, newRecord, updateRecord } from '../../ReduxStore/action'
 import { toast } from "react-toastify";
 import { ReactNode } from "react";
 
@@ -37,7 +37,7 @@ export const getAllRecords = () => {
     return async (dispatch: (arg0: { type: string; payload?: any; }) => void) => {
         dispatch(makeRequest())
         try {
-            const responce = await getAllTableRecords()
+            const responce = await getAllTableRecords();
             dispatch(getAllRecSuccess(responce.data.data));
         }
         catch (error: any) {
@@ -46,13 +46,29 @@ export const getAllRecords = () => {
     }
 }
 
-export const createTableRecord = (item: any) => {
+export const updateTableRecord = (item: any) => {
     return async (dispatch: (arg0: { type: string; payload?: any; }) => void) => {
-        const toastNotify = toast.loading("Please wait...")
+        const toastNotify = toast.loading("Please wait...");
 
         try {
-            const responce = await createNewRecord(item)            
-            toast.update(toastNotify, { ...toastParams, render: "Record was successfully created!", type: "success" });
+            const responce = await updateRecordById(item);      
+            toast.update(toastNotify, { ...toastParams, render: "Record was updated!", type: "success" });
+            dispatch(updateRecord(responce.data.data));
+        }
+        catch (error: any) {            
+            toast.update(toastNotify, { ...toastParams, render: `Failed to create record: ${error.message}`|| 'Failed to create record!', type: "error" });
+            dispatch(requestFailed(error.message || 'Failed to create record!'));
+        }
+    }
+}
+
+export const createTableRecord = (item: any) => {
+    return async (dispatch: (arg0: { type: string; payload?: any; }) => void) => {
+        const toastNotify = toast.loading("Please wait...");
+
+        try {
+            const responce = await createNewRecord(item);         
+            toast.update(toastNotify, { ...toastParams, render: "Record was created!", type: "success" });
             dispatch(createRecord(responce.data.data));
         }
         catch (error: any) {            
@@ -64,12 +80,12 @@ export const createTableRecord = (item: any) => {
 
 export const deleteTableRecord = (id: string) => {
     return async (dispatch: (arg0: { type: string; payload?: any; }) => void) => {
-        const toastNotify = toast.loading("Please wait...")
+        const toastNotify = toast.loading("Please wait...");
 
         try {
             const responce = await deleteRecordById(id)         
             dispatch(deleteRecord(id));
-            toast.update(toastNotify, { ...toastParams, render: "Record was successfully deleted!", type: "success" });
+            toast.update(toastNotify, { ...toastParams, render: "Record was deleted!", type: "success" });
         }
         catch (error: any) { 
             toast.update(toastNotify, { ...toastParams, render: `Failed to delete record: ${error.message}`|| 'Failed to delete record!', type: "error" });

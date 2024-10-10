@@ -8,3 +8,5 @@ export const DELETE_RECORD_SUCCESS = "DELETE_RECORD_SUCCESS";
 
 export const SELECT_RECORD = "SELECT_RECORD";
 export const NEW_RECORD = "NEW_RECORD";
+
+export const UPDATE_RECORD = "UPDATE_RECORD";
