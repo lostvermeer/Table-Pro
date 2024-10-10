@@ -84,7 +84,7 @@ export default function App() {
         />
       </Box>
 
-      {/* <BrowserRouter> */}
+      {/* <BrowserRouter basename="/Table-Pro"> */}
       <BrowserRouter >
         <Routes>
           <Route index element={<WelcomePage />} />
