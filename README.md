@@ -20,7 +20,7 @@ and build:dev script
 ```
 "build:dev": "webpack --mode=production --node-env=production" 
 ```
-so thar gh-pages could run repo properly
+so that gh-pages could run repo properly
 
 ### Further work
 
