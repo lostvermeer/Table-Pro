@@ -21,3 +21,9 @@ and build:dev script
 "build:dev": "webpack --mode=production --node-env=production" 
 ```
 so thar gh-pages could run repo properly
+
+### Further work
+
+*Set the proper typing 
+*Refactor Login page
+*Optimze webpack 

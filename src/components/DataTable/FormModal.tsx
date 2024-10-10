@@ -19,8 +19,8 @@ const FormModal: React.FC<ModalProps> = ({ isOpen, handleModal, createOrEdit }) 
   const dispatch = useAppDispatch();
   const selectedRecord = useAppSelector(state => state.table.selectedRecord);
 
-  const [employeeDate, setEmployeeDate] = useState<Dayjs | null>(dayjs(Date()));
-  const [companyDate, setCompanyDate] = useState<Dayjs | null>(dayjs(Date()));
+  const [employeeDate, setEmployeeDate] = useState<Dayjs | null>(dayjs());
+  const [companyDate, setCompanyDate] = useState<Dayjs | null>(dayjs());
   const [form, setForm] = useState<TableRecord | NewTableRecord>({
     companySigDate: '',
     companySignatureName: '',
@@ -66,6 +66,7 @@ const FormModal: React.FC<ModalProps> = ({ isOpen, handleModal, createOrEdit }) 
   };
 
   const handleDateChange = (name: string, newValue: Dayjs | null) => {
+
     if (newValue) {
       const formattedDate = newValue.toISOString();
       setForm({ ...form, [name]: formattedDate });
@@ -115,6 +116,7 @@ const FormModal: React.FC<ModalProps> = ({ isOpen, handleModal, createOrEdit }) 
         <DialogContent>
           <DialogContentText>
             If you want to create new contract, please fill in all the information below.
+            Please keep in mind that by default date is set for today's date.
           </DialogContentText>
           <Stack spacing={2} margin={1}>
 

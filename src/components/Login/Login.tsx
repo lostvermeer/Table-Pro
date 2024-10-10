@@ -78,7 +78,7 @@ export default function Login() {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            minHeight: '100vh', 
+            minHeight: '100vh'
           }}
         >
           <CircularProgress size={100} />
@@ -89,13 +89,13 @@ export default function Login() {
             sx={{
                   m: '0 auto',
                   mt: 3,
-                  textAlign: 'center',
-                  bgcolor: 'background.default',
                   display: 'flex',
-                flexDirection: 'column'
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  minHeight: '70vh'
                 }}
           > 
-            <Paper elevation={5} style={{padding: '20px'}}>
+            <Paper elevation={5} style={{padding: '20px', textAlign: 'center'}}>
 
               <LockIcon color="primary" sx={{ fontSize: 40 }} />
               <Typography 
