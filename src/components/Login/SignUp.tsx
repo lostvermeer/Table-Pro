@@ -115,7 +115,7 @@ const SingUp = (userAuthorization: { (): Promise<void>; (): void; }) => {
           variant="standard" 
           size="small" 
           margin="dense"
-          helperText= 'Please register as "userN", where N is a number.'
+          helperText= 'Please register as "userN", where N is a number [1-33].'
           value={username}
           error={errorUsername}
           onChange={(event) => {setUsername(event.target.value)}}
@@ -160,7 +160,7 @@ const SingUp = (userAuthorization: { (): Promise<void>; (): void; }) => {
           sx={{ mt: 1, mb: 1 }}
           fullWidth
         >
-          Login
+          Sugn Up
         </LoadingButton>
 
         {formInValid &&   <Alert severity="error">{errorMessege}</Alert>}
