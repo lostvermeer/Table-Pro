@@ -103,13 +103,14 @@ export default function App() {
   }
 
   return (
-    <BrowserRouter basename="/Table-Pro">
+    // <BrowserRouter basename="/Table-Pro">
+    <BrowserRouter>
         <Routes>
-            <Route index element={<WelcomePage />} /> 
-            <Route path='/' element={<WelcomePage />} /> 
-            <Route path="login" element={<Login />} />
-            <Route path="data-table" element={<DataTable />} />
-        </Routes>
+          <Route index element={<WelcomePage />} /> 
+          <Route path="login" element={<Login />} />
+          <Route path="data-table" element={<DataTable />} />
+          <Route path="*" element={<WelcomePage />} />  {/* Fallback 404 page */}
+      </Routes>
     </BrowserRouter>
 );
 

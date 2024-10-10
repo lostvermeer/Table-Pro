@@ -1,5 +1,5 @@
 import { getAllTableRecords, createNewRecord, deleteRecordById } from "../apiService";
-import { makeRequest, getAllRecSuccess, requestFailed, createRecord, deleteRecord } from '../../ReduxStore/action'
+import { makeRequest, getAllRecSuccess, requestFailed, createRecord, deleteRecord, selectRecord, newRecord } from '../../ReduxStore/action'
 import { toast } from "react-toastify";
 import { ReactNode } from "react";
 
@@ -19,6 +19,18 @@ const toastParams: ToastParams = {
     closeButton: true,
     autoClose: 1500,
     draggable: true,
+}
+
+export const setNewRecord = (item: any) => {
+    return (dispatch: (arg0: { type: string; payload?: any; }) => void) => {
+        dispatch(newRecord(item))
+    }
+}
+
+export const selectRecordId = (id: any) => {
+    return (dispatch: (arg0: { type: string; payload?: any; }) => void) => {
+        dispatch(selectRecord(id))
+    }
 }
 
 export const getAllRecords = () => {

@@ -11,10 +11,17 @@ import { format } from 'date-fns';
 import { Item, NewItem } from '../../Types/types';
 
 import { useAppDispatch, useAppSelector } from "../../ReduxStore/hooks";
-import { getAllRecords, createTableRecord, deleteTableRecord } from './actionCreator';
+import { getAllRecords, createTableRecord, deleteTableRecord, selectRecordId, setNewRecord } from './actionCreator';
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
+
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardMedia from '@mui/material/CardMedia';
+import Typography from '@mui/material/Typography';
+import CardActionArea from '@mui/material/CardActionArea';
 
 
 
@@ -45,7 +52,7 @@ const columns = [
   { id: 'documentName', name: 'Document Name'},
   { id: 'companySignatureName', name: 'Company Signature Name'},
   { id: 'companySigDate', name: 'Company Signing Date'},
-  { id: 'action', name: 'Action'}
+  { id: 'action', name: 'Action Center'}
 ];
 
 
@@ -57,6 +64,8 @@ const DataTable = () => {
   const dispatch = useAppDispatch();
   const items = useAppSelector(state => state.table.records);
   const isFetching = useAppSelector(state => state.table.isFetching);
+  const selectedRecord = useAppSelector(state => state.table.selectedRecord);
+  const newRecord = useAppSelector(state => state.table.newRecord);
   const error = useAppSelector(state => state.table.error);
 
 
@@ -64,7 +73,7 @@ const DataTable = () => {
   // const [loading, setLoading] = useState(false);
   const [openAlertModal, setOpenAlertModal] = useState(false);
   const [openFormModal, setOpenFormModal] = useState(false);
-  const [selectedRecordId, setSelectedRecordId] = useState<string | null>(null);
+  // const [selectedRecordId, setSelectedRecordId] = useState<string | null>(null);
   const [editRecord, setEditRecord] = useState<Item | null>(null);
 
   useEffect(() => {
@@ -92,52 +101,57 @@ const DataTable = () => {
 
   // Handle Alert Modal for deleting record
   const handleDelete = (id: string) => {
-    setSelectedRecordId(id);
+    // setSelectedRecordId(id); 
+    dispatch(selectRecordId(id));
     setOpenAlertModal(true);
   }
 
   const handleAlertModal = (shouldDelete: boolean) => {
     setOpenAlertModal(false);
 
-    if (shouldDelete){
-      dispatch(deleteTableRecord(selectedRecordId));
-      setSelectedRecordId(null);
+    if (shouldDelete && selectedRecord){
+      dispatch(deleteTableRecord(selectedRecord));
+      // setSelectedRecordId(null); 
+      dispatch(selectRecordId(null));
       // console.log("selectedRecordId: ", selectedRecordId);
     } 
   } 
 
   // Handle Form Modal for editing record
-  const handleEdit = (item: Item) => {
-    setEditRecord(item); 
+  const handleEdit = (id: string) => {
+    // setEditRecord(item); 
+    dispatch(selectRecordId(id));
     setOpenFormModal(true);
   }
 
-  const setEdit = (item: Item | null) => {
-    setOpenFormModal(false);
+  // const setEdit = (item: Item | null) => {
+  //   setOpenFormModal(false);
 
-    // dispatch() //edit item  
-  }
+  //   // dispatch() //edit item  
+  // }
 
   // Handle Form Modal for creating record
   const handleCreate = () => {
     setOpenFormModal(true);
   }
 
-  const handleFormModal = (item: Item | NewItem | null) => {
+  const handleFormModal = (submit: boolean) => {
     setOpenFormModal(false);
-    setEditRecord(null);
 
-    if (item){
-      console.log("HANDLE FROM MODAL IIIFFF: ", item);
+    if (submit) {
+      if (selectedRecord) {
+        // dispatch(editRequest());
+        // dispatch(selectRecordId(null));
+        console.log("selectRecordId: ", selectedRecord);
+        
+      }
+      else if (newRecord) {
+        dispatch(createTableRecord(newRecord));
+        dispatch(setNewRecord(null));
+      }
 
-      dispatch(createTableRecord(item));
-
-      // if (typeof item === "NewItem") {
-      //   // dispatch(createTableRecord(item));
-      //   // return;
-      // }
-      
-    }   
+    }
+  
   }
 
 
@@ -154,65 +168,100 @@ const DataTable = () => {
       >
         <CircularProgress size={100} />
       </Box>
-    ):(
+    ):( 
 
-    <div>
-      <div style={{marginTop: '1%', textAlign: 'right', paddingTop : 10, paddingRight: 30}}>
-        <Button variant="contained" color='success' startIcon={<AddIcon />} onClick={handleCreate}>
-          NEW
-        </Button>
-      </div>
-      <Paper elevation={6} sx={{marginLeft: 3, marginRight: 3, marginTop: 1}}>
-        
-        <div>
-        {/* <TableContainer sx={{overflow: 'initial'}}>
-          <Table stickyHeader> */}
-        <TableContainer>
-          <Table >
-            <TableHead >
-              <TableRow key="head-row">
-                {columns.map(column=>
-                  <TableCell variant='head' align="center" key={column.id}>{column.name}</TableCell> 
-                )}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {items.map((item: any) =>
-                <TableRow key={item.id}>
-                  {/* <TableCell variant="body" align="left">{item.id}</TableCell> */}
-                  <TableCell variant="body" align="center">{item.employeeNumber}</TableCell>
-                  <TableCell variant="body" align="center">{item.employeeSignatureName}</TableCell>
-                  <TableCell variant="body" align="center">{format(new Date(item.employeeSigDate), 'MMMM dd, yyyy')}</TableCell>
-                  <TableCell variant="body" align="center">{item.documentType}</TableCell>
-                  <TableCell variant="body" align="center">{item.documentStatus}</TableCell>
-                  <TableCell variant="body" align="center">{item.documentName}</TableCell>
-                  <TableCell variant="body" align="center">{item.companySignatureName}</TableCell>
-                  <TableCell variant="body" align="center">{format(new Date(item.companySigDate), 'MMMM dd, yyyy')}</TableCell>
-                  <TableCell variant="body" align="center">
-                    <Stack direction={{ xs: 'column', sm: 'row' }} >
-                      <IconButton aria-label="edit" color="primary" onClick={() => {handleEdit(item)}} >
-                        <EditIcon  fontSize="medium"/>
-                      </IconButton>
-                      <IconButton aria-label="delete" color="error" onClick={() => {handleDelete(item.id)}} >
-                        <DeleteIcon  fontSize="medium" />
-                      </IconButton>
-                    </Stack>
-                  </TableCell>
+    // error ? (
+
+    //   <Box
+    //     sx={{
+    //       display: 'flex',
+    //       justifyContent: 'center',
+    //       alignItems: 'center',
+    //       width: '100vw', 
+    //       height: '90vh'
+    //     }}
+    //   >
+    //     <Card sx={{ maxWidth: 345, transform: 'scale(3)', transformOrigin: 'center' }}>
+    //       <CardActionArea>
+    //         <CardContent>
+    //           <Typography gutterBottom variant="h5" component="div">
+    //             {error}
+    //           </Typography>
+    //           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+    //             Please refresh the page
+    //           </Typography>
+    //         </CardContent>
+    //       </CardActionArea>
+    //     </Card>
+    //   </Box>
+
+    // ) : (
+
+      <div>
+        <Paper elevation={6} 
+          sx={{
+            maxWidth: '1500px', 
+            // maxHeight: '500px', 
+            margin: '20px auto', 
+          }}>
+          <Box sx= {{marginTop: '1%', textAlign: 'right', paddingTop : 2, paddingRight: 3}}>
+            <Button variant="contained" color='success' startIcon={<AddIcon />} onClick={handleCreate}>
+              NEW
+            </Button>
+          </Box>
+          
+          <div>
+          {/* <TableContainer sx={{overflow: 'initial'}}>
+            <Table stickyHeader> */}
+          <TableContainer>
+            <Table >
+              <TableHead >
+                <TableRow key="head-row">
+                  {columns.map(column=>
+                    <TableCell sx={{ fontWeight: 'bold' }} align="center" key={column.id}>{column.name}</TableCell> 
+                  )}
                 </TableRow>
-              )}             
-            </TableBody>
-          </Table>
-        </TableContainer>
-        </div>
-      </Paper>
+              </TableHead>
+              <TableBody>
+                {items.map((item: any) =>
+                  <TableRow key={item.id}>
+                    {/* <TableCell variant="body" align="left">{item.id}</TableCell> */}
+                    <TableCell variant="body" align="center">{item.employeeNumber}</TableCell>
+                    <TableCell variant="body" align="center">{item.employeeSignatureName}</TableCell>
+                    <TableCell variant="body" align="center">{format(new Date(item.employeeSigDate), 'MMMM dd, yyyy')}</TableCell>
+                    <TableCell variant="body" align="center">{item.documentType}</TableCell>
+                    <TableCell variant="body" align="center">{item.documentStatus}</TableCell>
+                    <TableCell variant="body" align="center">{item.documentName}</TableCell>
+                    <TableCell variant="body" align="center">{item.companySignatureName}</TableCell>
+                    <TableCell variant="body" align="center">{format(new Date(item.companySigDate), 'MMMM dd, yyyy')}</TableCell>
+                    <TableCell variant="body" align="left">
+                      <Stack direction={{ xs: 'column', sm: 'row' }} >
+                        <IconButton aria-label="edit" color="primary" onClick={() => {handleEdit(item.id)}} >
+                          <EditIcon  fontSize="medium"/>
+                        </IconButton>
+                        <IconButton aria-label="delete" color="error" onClick={() => {handleDelete(item.id)}} >
+                          <DeleteIcon  fontSize="medium" />
+                        </IconButton>
+                      </Stack>
+                    </TableCell>
+                  </TableRow>
+                )}             
+              </TableBody>
+            </Table>
+          </TableContainer>
+          </div>
+        </Paper>
 
-      <AlertModal isOpen={openAlertModal} handleModal={handleAlertModal} />
-      <FormModal isOpen={openFormModal} handleModal={handleFormModal} isEdit={editRecord}/>
+        <AlertModal isOpen={openAlertModal} handleModal={handleAlertModal} />
+        <FormModal isOpen={openFormModal} handleModal={handleFormModal} isEdit={editRecord}/>
+        <ToastContainer />
 
-      <ToastContainer />
-      
-      <div>{error}</div>
-    </div>
+      </div>
+
+
+    // )
+
+    
 
 
 
@@ -246,7 +295,7 @@ const DataTable = () => {
     //     />
     //   </Paper>
     // </Container>
-    )}  
+  )}  
       
     </>  
   )
