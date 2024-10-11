@@ -1,4 +1,4 @@
-# 🚀SPA-application realization with React/Rudux/Typescript + Webpack and Material UI on for Pryaniky.com🍪
+# 🚀SPA-application realization with React/Redux/Typescript + Webpack and Material UI for Pryaniky.com🍪
 
 To run application plaese use GitHub Pages
 or
