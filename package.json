@@ -1,8 +1,8 @@
 {
-  "homepage": "http://lostvermeer.github.io/Table-Pro",
+  "homepage": "https://github.com/lostvermeer/Todo-app.git",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lostvermeer/Table-Pro.git"
+    "url": "git+https://github.com/lostvermeer/Todo-app.git"
   },
   "scripts": {
     "start": "webpack-dev-server --open",
@@ -10,7 +10,7 @@
     "deploy": "gh-pages -d dist",
     "predeploy": "npm run build",
     "build:prod": "webpack --mode=production --node-env=production",
-    "build:dev": "webpack --mode=production --node-env=production",
+    "build:dev": "webpack --mode=development --node-env=development",
     "watch": "webpack --watch",
     "serve": "webpack serve"
   },

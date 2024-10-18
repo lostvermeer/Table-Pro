@@ -8,7 +8,7 @@ https://github.com/lostvermeer/Table-Pro.git
 ```
 and run in terminal
 ```
-npm run build
+npm install
 npm run start
 ```
 
